@@ -540,8 +540,8 @@ async def on_voice_state_update(member: discord.Member, before: discord.VoiceSta
         try:
             await channel.set_permissions(
                 member,
-                manage_channels=True,
-                move_members=True,
+                manage_channels=False, # User darf das Limit/Namen NICHT selbst ändern
+                move_members=True,     # User darf aber weiterhin Leute mufen/kicken
                 connect=True,
                 speak=True
             )
