@@ -114,18 +114,20 @@ async def load_modules():
 # ============================================================
 # VOICE CONFIG
 # ============================================================
-async def set_guild_voice_cfg(guild_id: int, create_channel_id: int, voice_category_id: int) -> None:
+async def set_guild_voice_cfg(guild_id: int, create_channel_id: int, create_channel_3_id: int, voice_category_id: int) -> None:
     await update_guild_cfg(
         guild_id,
         create_channel_id=int(create_channel_id),
+        create_channel_3_id=int(create_channel_3_id),
         voice_category_id=int(voice_category_id)
     )
 
 async def clear_guild_voice_cfg(guild_id: int) -> None:
-    await clear_guild_cfg_fields(guild_id, ["create_channel_id", "voice_category_id"])
+    await clear_guild_cfg_fields(guild_id, ["create_channel_id", "create_channel_3_id", "voice_category_id"])
 
-def squad_channel_name(member: discord.Member) -> str:
-    return f"Squad {member.display_name}"
+def squad_channel_name(member: discord.Member, limit: int) -> str:
+    suffix = f" ({limit}er)" if limit > 0 else ""
+    return f"Squad {member.display_name}{suffix}"
 
 # ============================================================
 # TWITCH CONFIG (separat, überschreibt VOICE NICHT)
@@ -478,10 +480,14 @@ async def on_member_update(before: discord.Member, after: discord.Member):
         ch = after.voice.channel
         # Simple heuristic: starts with "Squad " and member has manage_channels permissions
         if ch.name.startswith("Squad ") and ch.permissions_for(after).manage_channels:
-            if ch.name != squad_channel_name(after):
+            # We don't know the limit easily here, but we can check if it matches the current name pattern
+            # and just update the name part.
+            limit = ch.user_limit
+            new_name = squad_channel_name(after, limit)
+            if ch.name != new_name:
                 try:
-                    await ch.edit(name=squad_channel_name(after))
-                    logger.info(f"Renamed channel to {ch.name} because of display name change of {after}")
+                    await ch.edit(name=new_name)
+                    logger.info(f"Renamed channel to {new_name} because of display name change of {after}")
                 except:
                     pass
 
@@ -494,24 +500,34 @@ async def on_voice_state_update(member: discord.Member, before: discord.VoiceSta
     if not cfg:
         return
 
-    if not cfg.get("create_channel_id") or not cfg.get("voice_category_id"):
+    category_id = cfg.get("voice_category_id")
+    if not category_id:
         return
 
-    create_id = int(cfg["create_channel_id"])
-    category_id = int(cfg["voice_category_id"])
+    create_id_2 = cfg.get("create_channel_id")
+    create_id_3 = cfg.get("create_channel_3_id")
 
-    if after.channel and after.channel.id == create_id:
-        category = member.guild.get_channel(category_id)
+    # --- Erstellen ---
+    target_limit = 0
+    if after.channel:
+        if create_id_2 and after.channel.id == int(create_id_2):
+            target_limit = 2
+        elif create_id_3 and after.channel.id == int(create_id_3):
+            target_limit = 3
+
+    if target_limit > 0:
+        category = member.guild.get_channel(int(category_id))
         if not isinstance(category, discord.CategoryChannel):
             logger.error(f"[{member.guild.name}] Ziel-Kategorie fehlt/ungültig (ID={category_id}).")
             return
 
         try:
             channel = await member.guild.create_voice_channel(
-                name=squad_channel_name(member),
-                category=category
+                name=squad_channel_name(member, target_limit),
+                category=category,
+                user_limit=target_limit
             )
-            logger.info(f"➕ [{member.guild.name}] Created: {channel.name} (owner={member.display_name})")
+            logger.info(f"➕ [{member.guild.name}] Created {target_limit}er: {channel.name} (owner={member.display_name})")
         except Exception as e:
             logger.error(f"[{member.guild.name}] Error creating voice channel: {e}")
             return
@@ -529,20 +545,29 @@ async def on_voice_state_update(member: discord.Member, before: discord.VoiceSta
             logger.error(f"[{member.guild.name}] Error moving member to new channel: {e}")
 
     # --- Löschen ---
-    if before.channel and before.channel.id != create_id:
-        if before.channel.category_id == category_id:
-            if before.channel.name.startswith("Squad ") and len(before.channel.members) == 0:
-                try:
-                    await before.channel.delete()
-                    logger.info(f"🗑️ [{member.guild.name}] Deleted empty squad channel: {before.channel.name}")
-                except discord.NotFound:
-                    pass # Bereits gelöscht, ignorieren
-                except Exception as e:
-                    logger.error(f"[{member.guild.name}] Error deleting voice channel: {e}")
+    if before.channel:
+        # Check if it was a join channel
+        is_join_2 = create_id_2 and before.channel.id == int(create_id_2)
+        is_join_3 = create_id_3 and before.channel.id == int(create_id_3)
+        
+        if not is_join_2 and not is_join_3:
+            if before.channel.category_id == int(category_id):
+                if before.channel.name.startswith("Squad ") and len(before.channel.members) == 0:
+                    try:
+                        await before.channel.delete()
+                        logger.info(f"🗑️ [{member.guild.name}] Deleted empty squad channel: {before.channel.name}")
+                    except discord.NotFound:
+                        pass
+                    except Exception as e:
+                        logger.error(f"[{member.guild.name}] Error deleting voice channel: {e}")
 
-    if after.channel and after.channel.category and after.channel.category.id == category_id:
-        if after.channel.id != create_id:
-            desired = squad_channel_name(member)
+    if after.channel and after.channel.category and after.channel.category.id == int(category_id):
+        is_join_2 = create_id_2 and after.channel.id == int(create_id_2)
+        is_join_3 = create_id_3 and after.channel.id == int(create_id_3)
+        
+        if not is_join_2 and not is_join_3:
+            limit = after.channel.user_limit
+            desired = squad_channel_name(member, limit)
             current = after.channel.name
 
             looks_like_old = current == member.display_name or current == f"🎧 {member.display_name}"
@@ -559,29 +584,29 @@ async def on_voice_state_update(member: discord.Member, before: discord.VoiceSta
                 except discord.HTTPException as e:
                     logger.error(f"[{member.guild.name}] HTTPException: rename channel | {e}")
 
-    # Der zweite Block unten ist redundant und verursacht die 404 Fehler.
-    # Ich entferne ihn, da die Logik oben bereits alles abdeckt.
-
 # ============================================================
 # SLASH COMMANDS: VOICE (1:1)
 # ============================================================
-@bot.tree.command(name="setup_autovoice", description="Richtet Auto-Voice ein: Join-Channel + Ziel-Kategorie auswählen.")
+@bot.tree.command(name="setup_autovoice", description="Richtet Auto-Voice ein: Join-Channels + Ziel-Kategorie.")
 @app_commands.checks.has_permissions(manage_guild=True)
 @app_commands.describe(
-    create_channel="Voice-Channel, den man joint um einen Squad-Channel zu erstellen",
+    create_channel_2="Voice-Channel für 2er Squads",
+    create_channel_3="Voice-Channel für 3er Squads",
     target_category="Kategorie, in der die erstellten Squad-Channels landen sollen"
 )
 async def setup_autovoice(
     interaction: discord.Interaction,
-    create_channel: discord.VoiceChannel,
+    create_channel_2: discord.VoiceChannel,
+    create_channel_3: discord.VoiceChannel,
     target_category: discord.CategoryChannel
 ):
-    await set_guild_voice_cfg(interaction.guild_id, create_channel.id, target_category.id)
+    await set_guild_voice_cfg(interaction.guild_id, create_channel_2.id, create_channel_3.id, target_category.id)
     await interaction.response.send_message(
         f"✅ Auto-Voice aktiviert.\n"
-        f"➕ Join-Channel: **{create_channel.name}**\n"
+        f"👥 2er Join-Channel: **{create_channel_2.name}**\n"
+        f"👥 3er Join-Channel: **{create_channel_3.name}**\n"
         f"📁 Ziel-Kategorie: **{target_category.name}**\n\n"
-        f"Ergebnis: **Squad <Username>**",
+        f"Ergebnis: **Squad <Username> (Xer)**",
         ephemeral=True
     )
 
@@ -589,18 +614,20 @@ async def setup_autovoice(
 @app_commands.checks.has_permissions(manage_guild=True)
 async def autovoice_status(interaction: discord.Interaction):
     cfg = await get_guild_cfg(interaction.guild_id)
-    if not cfg or "create_channel_id" not in cfg or "voice_category_id" not in cfg or not cfg["create_channel_id"]:
+    if not cfg or not cfg.get("voice_category_id"):
         await interaction.response.send_message("ℹ️ Auto-Voice ist auf diesem Server noch nicht eingerichtet.", ephemeral=True)
         return
 
-    create_ch = interaction.guild.get_channel(int(cfg["create_channel_id"]))
-    cat = interaction.guild.get_channel(int(cfg["voice_category_id"]))
+    ch2 = interaction.guild.get_channel(int(cfg.get("create_channel_id", 0))) if cfg.get("create_channel_id") else None
+    ch3 = interaction.guild.get_channel(int(cfg.get("create_channel_3_id", 0))) if cfg.get("create_channel_3_id") else None
+    cat = interaction.guild.get_channel(int(cfg.get("voice_category_id", 0))) if cfg.get("voice_category_id") else None
 
     await interaction.response.send_message(
         "✅ Auto-Voice Status:\n"
-        f"➕ Join-Channel: **{create_ch.name if create_ch else 'FEHLT (gelöscht?)'}**\n"
+        f"👥 2er Join-Channel: **{ch2.name if ch2 else 'Nicht konfiguriert'}**\n"
+        f"👥 3er Join-Channel: **{ch3.name if ch3 else 'Nicht konfiguriert'}**\n"
         f"📁 Ziel-Kategorie: **{cat.name if cat else 'FEHLT (gelöscht?)'}**\n"
-        f"🏷️ Naming: **Squad <Username>**",
+        f"🏷️ Naming: **Squad <Username> (Xer)**",
         ephemeral=True
     )
 

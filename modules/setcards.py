@@ -32,6 +32,7 @@ def _ensure_db_sync() -> None:
                 guild_id INTEGER PRIMARY KEY,
                 setcard_channel_id INTEGER,
                 create_channel_id INTEGER,
+                create_channel_3_id INTEGER,
                 voice_category_id INTEGER,
                 twitch_enabled INTEGER DEFAULT 0,
                 twitch_channel TEXT,
