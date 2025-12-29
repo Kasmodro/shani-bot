@@ -6,7 +6,8 @@ Shani is a powerful Discord bot designed specifically for **ARC Raiders** commun
 
 ## ⚡ Quick Start
 ```bash
-git clone https://github.com/Kasmodro/shani-arc-raiders-bot.git && cd shani-arc-raiders-bot
+git clone https://github.com/Kasmodro/shani-arc-raiders-bot.git
+cd shani-arc-raiders-bot
 pip install -r requirements.txt
 cp .env.example .env # Add your DISCORD_TOKEN to .env
 python3 bot.py
