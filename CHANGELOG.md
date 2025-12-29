@@ -6,7 +6,7 @@ Alle relevanten Änderungen am Shani-Bot | All relevant changes to Shani Bot
 ## [1.1.0] – 2025-12-29
 ### 🇩🇪 Deutsch
 ✨ **YouTube & Stabilität**
-- **YouTube Live-Alerts:** Neues Modul zur Erkennung von YouTube-Live-Streams ohne API-Key.
+- **YouTube Live-Alerts:** Neues Modul zur Erkennung von YouTube-Live-Streams ohne API-Key. Unterstützt Handles (z. B. `@alexanderfuehren`) und Channel-IDs.
 - **Zweisprachiges Changelog:** Dokumentation nun konsistent in Deutsch und Englisch.
 
 ✨ **Konsolen-Support & Anpassbarkeit**
@@ -21,7 +21,7 @@ Alle relevanten Änderungen am Shani-Bot | All relevant changes to Shani Bot
 
 ### 🇺🇸 English
 ✨ **YouTube & Stability**
-- **YouTube Live Alerts:** New module for detecting YouTube live streams without an API key.
+- **YouTube Live Alerts:** New module for detecting YouTube live streams without an API key. Supports handles (e.g., `@alexanderfuehren`) and channel IDs.
 - **Bilingual Changelog:** Documentation now consistently provided in German and English.
 
 ✨ **Console Support & Customization**
