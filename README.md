@@ -126,6 +126,14 @@ Players create personal profiles including playstyle, platform, and experience.
 3.  Configure Roles, Channels, Twitch notifications, or **Change Bot Name**.
 Everything is guided — no memorizing commands.
 
+### ⚙️ Changing the Slash Command Name
+If you want to rename the `/shani` command to match your bot's name (e.g., `/menu` or `/raider`):
+1.  Open `bot.py`.
+2.  Find the line starting with `@bot.tree.command(name="shani", ...)` (around line 813).
+3.  Change `name="shani"` to your preferred name (lowercase, no spaces).
+4.  Restart the bot.
+5.  Reload Discord (**CTRL + R**).
+
 ## 👤 User Usage
 1.  Run `/shani`
 2.  Edit your **Raider Setcard**.
@@ -211,6 +219,14 @@ Shani ist ein moderner Discord-Bot, der speziell für **ARC Raiders** Communitie
 3.  Abhängigkeiten installieren: `pip install -r requirements.txt`
 4.  `.env` Datei erstellen (siehe `.env.example`) und Bot-Token eintragen.
 5.  Bot starten: `python3 bot.py`
+
+### ⚙️ Slash-Command Namen ändern
+Wenn du den `/shani` Befehl umbenennen möchtest (z.B. in `/menu` oder `/start`):
+1.  Öffne die Datei `bot.py`.
+2.  Suche die Zeile `@bot.tree.command(name="shani", ...)` (ca. Zeile 813).
+3.  Ändere `name="shani"` in deinen Wunschnamen (nur Kleinbuchstaben, keine Leerzeichen).
+4.  Starte den Bot neu.
+5.  Starte Discord neu oder drücke **STRG + R**.
 
 ### 🆘 Support
 Bei Fragen oder Problemen besuche uns auf unserem [Discord Server](https://discord.gg/UhhJtFteun).
