@@ -4,6 +4,14 @@
 
 Shani is a powerful Discord bot designed specifically for **ARC Raiders** communities. It streamlines squad management, player profiles, and stream notifications to enhance the gaming experience.
 
+## ⚡ Quick Start
+```bash
+git clone https://github.com/Kasmodro/shani-arc-raiders-bot.git && cd shani-arc-raiders-bot
+pip install -r requirements.txt
+cp .env.example .env # Add your DISCORD_TOKEN to .env
+python3 bot.py
+```
+
 ## 🚀 Main Features
 - **Auto Voice Channels:** Dynamic squad channels (2-player, 3-player, or open squads).
 - **Raider Setcards:** Comprehensive player profiles for better squad matching.
@@ -40,6 +48,21 @@ Ein leistungsstarker Discord-Bot für die Verwaltung von Raider-Setcards, dynami
 *   **Hauptmenü:** Zentraler Einstiegspunkt über `/shani` mit rollenbasierter Button-Anzeige.
 *   **Admin- & Mod-Rollen:** Konfigurierbare Rollen für erweiterten Zugriff auf Bot-Funktionen.
 *   **Sichtbarkeit:** Administrative Befehle sind für normale User in Discord unsichtbar.
+
+## 🛡️ Discord Permissions & Intents
+Damit alle Funktionen reibungslos laufen, benötigt der Bot folgende Einstellungen im Discord Developer Portal:
+
+### Privileged Gateway Intents
+*   **Presence Intent:** Aus (nicht benötigt)
+*   **Server Members Intent:** AN (für Rollenprüfung & Setcards)
+*   **Message Content Intent:** AN (für Befehlsverarbeitung)
+
+### Bot Permissions (OAuth2 Scope: `bot` + `applications.commands`)
+*   **Manage Channels:** Erstellen/Löschen der Squad-Kanäle
+*   **Move Members:** Verschieben in neue Squads
+*   **Manage Roles:** Rollenprüfung beim Setup
+*   **Send Messages / Embed Links:** Benachrichtigungen & Setcards
+*   **Connect / Speak:** Voice-Support
 
 ## 📋 Voraussetzungen
 *   Python 3.12+
