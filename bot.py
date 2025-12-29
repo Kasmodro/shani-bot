@@ -718,9 +718,9 @@ class SquadMenuView(discord.ui.View):
         await interaction.response.defer(ephemeral=True)
         channel = await _create_squad_channel(interaction.user, limit)
         if channel:
-            msg = f"✅ Squad-Channel **{channel.name}** wurde erstellt."
+            msg = f"✅ Squad-Channel **{channel.mention}** wurde erstellt."
             if not interaction.user.voice:
-                msg += "\n⚠️ Du bist in keinem Voice-Channel, daher konnte ich dich nicht automatisch verschieben."
+                msg += f"\n\nKlicke oben auf den Link, um deinem neuen Channel beizutreten!"
             await interaction.followup.send(msg, ephemeral=True)
         else:
             await interaction.followup.send("❌ Fehler: Auto-Voice ist nicht konfiguriert oder die Kategorie fehlt.", ephemeral=True)
