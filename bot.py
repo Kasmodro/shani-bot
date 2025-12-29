@@ -753,6 +753,22 @@ async def squad_cmd(interaction: discord.Interaction):
 # ============================================================
 # GLOBAL STATUS & MENU COMMANDS
 # ============================================================
+class BotNameModal(discord.ui.Modal):
+    def __init__(self):
+        super().__init__(title="Bot-Anzeigenamen ändern")
+        self.new_name = discord.ui.TextInput(
+            label="Neuer Name",
+            placeholder="z.B. Raider-Bot (Standard: Shani)",
+            min_length=2,
+            max_length=32,
+            required=True
+        )
+        self.add_item(self.new_name)
+
+    async def on_submit(self, interaction: discord.Interaction):
+        await update_guild_cfg(interaction.guild_id, bot_custom_name=str(self.new_name.value))
+        await interaction.response.send_message(f"✅ Der Bot-Anzeigename wurde auf **{self.new_name.value}** geändert.", ephemeral=True)
+
 class ShaniMenuView(discord.ui.View):
     def __init__(self, member: discord.Member, cfg: dict):
         super().__init__(timeout=60)
@@ -791,17 +807,22 @@ class ShaniMenuView(discord.ui.View):
              btn_admin = discord.ui.Button(label="Admin Setup", style=discord.ButtonStyle.danger, custom_id="shani_menu_admin")
              self.add_item(btn_admin)
 
+    def _get_bot_name(self):
+        return self.cfg.get("bot_custom_name") or "Shani"
+
 @bot.tree.command(name="shani", description="Öffnet das Shani-Hauptmenü.")
 async def shani(interaction: discord.Interaction):
     cfg = await get_guild_cfg(interaction.guild_id)
     view = ShaniMenuView(interaction.user, cfg)
     
+    bot_name = cfg.get("bot_custom_name") or "Shani"
+    
     embed = discord.Embed(
-        title="🤖 Shani Hauptmenü",
+        title=f"🤖 {bot_name} Hauptmenü",
         description="Wähle eine Option aus dem Menü unten.",
         color=discord.Color.blue()
     )
-    embed.set_footer(text="Raiders Cache • ARC Raiders")
+    embed.set_footer(text=f"Raiders Cache • {bot_name}")
     
     await interaction.response.send_message(embed=embed, view=view, ephemeral=True)
 
@@ -862,8 +883,10 @@ async def shani_menu_listener(interaction: discord.Interaction):
         await shani_status.callback(interaction)
     elif cid == "shani_menu_admin":
         view = ShaniSetupView()
+        bot_name = interaction.message.embeds[0].footer.text.split(" • ")[-1] if interaction.message and interaction.message.embeds and interaction.message.embeds[0].footer else "Shani"
+        
         embed = discord.Embed(
-            title="🛠️ Shani Admin Setup",
+            title=f"🛠️ {bot_name} Admin Setup",
             description="Hier kannst du alle wichtigen Funktionen des Bots konfigurieren.",
             color=discord.Color.red()
         )
@@ -985,6 +1008,10 @@ class ShaniSetupView(discord.ui.View):
             color=discord.Color.purple()
         )
         await interaction.response.send_message(embed=embed, view=view, ephemeral=True)
+
+    @discord.ui.button(label="Bot-Name ändern", style=discord.ButtonStyle.secondary, row=2)
+    async def btn_bot_name(self, interaction: discord.Interaction, button: discord.ui.Button):
+        await interaction.response.send_modal(BotNameModal())
 
     @discord.ui.button(label="Aktueller Status", style=discord.ButtonStyle.success, row=2)
     async def btn_check(self, interaction: discord.Interaction, button: discord.ui.Button):

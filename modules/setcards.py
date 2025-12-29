@@ -48,7 +48,8 @@ def _ensure_db_sync() -> None:
                 twitch_announced_this_stream INTEGER DEFAULT 0,
                 role_admin_id INTEGER,
                 role_mod_id INTEGER,
-                role_setcard_id INTEGER
+                role_setcard_id INTEGER,
+                bot_custom_name TEXT DEFAULT 'Shani'
             );
         """)
         conn.execute("""
