@@ -5,6 +5,10 @@ Alle relevanten Änderungen am Shani-Bot | All relevant changes to Shani Bot
 
 ## [1.1.0] – 2025-12-29
 ### 🇩🇪 Deutsch
+✨ **YouTube & Stabilität**
+- **YouTube Live-Alerts:** Neues Modul zur Erkennung von YouTube-Live-Streams ohne API-Key.
+- **Zweisprachiges Changelog:** Dokumentation nun konsistent in Deutsch und Englisch.
+
 ✨ **Konsolen-Support & Anpassbarkeit**
 - **Anpassbarer Bot-Name:** Admins können den Anzeigenamen des Bots im Menü und in den Embeds nun ändern.
 - **Slash-Command Dokumentation:** Anleitung zur manuellen Änderung des Hauptbefehls `/shani` in der README ergänzt.
@@ -13,9 +17,13 @@ Alle relevanten Änderungen am Shani-Bot | All relevant changes to Shani Bot
 - **Modulare Struktur:** Twitch-Logik in `modules/twitch.py` ausgelagert.
 
 🛠️ **Fehlerbehebungen**
-- **Datenbank-Migration:** Automatische Migration für `bot_custom_name` hinzugefügt.
+- **Datenbank-Migration:** Automatische Migration für `bot_custom_name` und YouTube-Spalten hinzugefügt.
 
 ### 🇺🇸 English
+✨ **YouTube & Stability**
+- **YouTube Live Alerts:** New module for detecting YouTube live streams without an API key.
+- **Bilingual Changelog:** Documentation now consistently provided in German and English.
+
 ✨ **Console Support & Customization**
 - **Customizable Bot Name:** Admins can now change the bot's display name in menus and embeds.
 - **Slash Command Documentation:** Added instructions to README for renaming the `/shani` command.
@@ -24,7 +32,7 @@ Alle relevanten Änderungen am Shani-Bot | All relevant changes to Shani Bot
 - **Modular Structure:** Moved Twitch logic to `modules/twitch.py`.
 
 🛠️ **Bug Fixes**
-- **Database Migration:** Added automatic migration for `bot_custom_name` column.
+- **Database Migration:** Added automatic migration for `bot_custom_name` and YouTube columns.
 
 ---
 

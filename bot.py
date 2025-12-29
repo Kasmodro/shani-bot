@@ -119,6 +119,8 @@ async def load_modules():
     await bot.load_extension("modules.setcards")
     # Twitch-Modul
     await bot.load_extension("modules.twitch")
+    # YouTube-Modul
+    await bot.load_extension("modules.youtube")
 
 # ============================================================
 # VOICE CONFIG
@@ -710,6 +712,17 @@ class ShaniSetupView(discord.ui.View):
         )
         await interaction.response.send_message(embed=embed, view=view, ephemeral=True)
 
+    @discord.ui.button(label="YouTube-Live", style=discord.ButtonStyle.secondary, row=2)
+    async def btn_youtube(self, interaction: discord.Interaction, button: discord.ui.Button):
+        from modules.youtube import YoutubeSetupView
+        view = YoutubeSetupView()
+        embed = discord.Embed(
+            title="🔴 YouTube-Live Setup",
+            description="Konfiguriere den YouTube-Kanal und die Benachrichtigungen.",
+            color=discord.Color.red()
+        )
+        await interaction.response.send_message(embed=embed, view=view, ephemeral=True)
+
     @discord.ui.button(label="Bot-Name ändern", style=discord.ButtonStyle.secondary, row=2)
     async def btn_bot_name(self, interaction: discord.Interaction, button: discord.ui.Button):
         await interaction.response.send_modal(BotNameModal())
@@ -851,7 +864,20 @@ async def shani_status(interaction: discord.Interaction):
         )
     else:
         tw_val = "❌ Deaktiviert"
-    embed.add_field(name="🟣 Twitch Live-Alerts", value=tw_val, inline=False)
+    embed.add_field(name="🟣 Twitch Live-Alerts", value=tw_val, inline=True)
+
+    # 🔴 YouTube
+    if cfg.get("youtube_enabled"):
+        yt_ch = interaction.guild.get_channel(int(cfg.get("youtube_announce_channel_id", 0))) if cfg.get("youtube_announce_channel_id") else None
+        yrole = interaction.guild.get_role(int(cfg.get("youtube_ping_role_id", 0))) if cfg.get("youtube_ping_role_id") else None
+        yt_val = (
+            f"• Kanal: **{cfg.get('youtube_channel')}**\n"
+            f"• Announce: {yt_ch.mention if yt_ch else '❌'}\n"
+            f"• Ping: {yrole.mention if yrole else '—'}"
+        )
+    else:
+        yt_val = "❌ Deaktiviert"
+    embed.add_field(name="🔴 YouTube Live-Alerts", value=yt_val, inline=True)
 
     embed.set_footer(text="Shani Bot Status")
     await interaction.response.send_message(embed=embed, ephemeral=True)

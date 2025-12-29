@@ -15,6 +15,7 @@ Shani improves your ARC Raiders Discord server by providing:
 *   🎧 **Automatic Voice Squads** (2-player, 3-player, or open)
 *   🧾 **Raider Setcards** (player profiles & matchmaking)
 *   🟣 **Twitch Live Alerts** (no Twitch API key required)
+*   🔴 **YouTube Live Alerts** (scraping-based, no API key required)
 *   🧭 **Interactive UI** using Slash Commands & Buttons
 *   🔒 **No administrator permissions required**
 
@@ -112,6 +113,11 @@ Players create personal profiles including playstyle, platform, and experience.
 *   Setup via admin menu.
 *   Live messages auto-update when stream ends.
 
+### 🔴 YouTube Live Alerts (No API)
+*   Scraping-based detection (supports handles like `@name` or Channel IDs).
+*   Setup via admin menu.
+*   Automatic live notification and offline status update.
+
 ### 🧭 Interactive UI
 *   One command: `/shani`
 *   Buttons & menus only — no command spam.
@@ -123,7 +129,7 @@ Players create personal profiles including playstyle, platform, and experience.
 ## 🛠️ Admin Usage
 1.  Run `/shani`
 2.  Click **Admin Setup**
-3.  Configure Roles, Channels, Twitch notifications, or **Change Bot Name**.
+3.  Configure Roles, Channels, Twitch, **YouTube**, or **Change Bot Name**.
 Everything is guided — no memorizing commands.
 
 ### ⚙️ Changing the Slash Command Name
@@ -209,6 +215,7 @@ Shani ist ein moderner Discord-Bot, der speziell für **ARC Raiders** Communitie
 *   Dynamische Kanäle für 2er, 3er oder offene Squads.
 *   🧾 **Raider Setcards:** Detaillierte Spielerprofile und Suche nach Mitspielern.
 *   🟣 **Twitch Live-Alerts:** Benachrichtigungen ohne Twitch-API-Key.
+*   🔴 **YouTube Live-Alerts:** Benachrichtigungen via Scraping (ohne API-Key).
 *   🧭 **Interaktive UI:** Einfache Bedienung über Buttons und Menüs.
 *   🏷️ **Anpassbarer Name:** Der Bot-Name kann über das Admin-Menü geändert werden.
 *   🔒 **Sicherheit:** Keine Administrator-Rechte erforderlich.

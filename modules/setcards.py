@@ -49,7 +49,15 @@ def _ensure_db_sync() -> None:
                 role_admin_id INTEGER,
                 role_mod_id INTEGER,
                 role_setcard_id INTEGER,
-                bot_custom_name TEXT DEFAULT 'Shani'
+                bot_custom_name TEXT DEFAULT 'Shani',
+                youtube_enabled INTEGER DEFAULT 0,
+                youtube_channel TEXT,
+                youtube_announce_channel_id INTEGER,
+                youtube_ping_role_id INTEGER,
+                youtube_last_live_message_id INTEGER,
+                youtube_last_check_ts REAL DEFAULT 0.0,
+                youtube_last_seen_live_ts REAL DEFAULT 0.0,
+                youtube_announced_this_stream INTEGER DEFAULT 0
             );
         """)
         conn.execute("""
@@ -70,6 +78,30 @@ def _ensure_db_sync() -> None:
                 PRIMARY KEY (guild_id, user_id)
             );
         """)
+        
+        # Migration: Ensure bot_custom_name exists
+        try:
+            conn.execute("ALTER TABLE guild_settings ADD COLUMN bot_custom_name TEXT DEFAULT 'Shani';")
+        except sqlite3.OperationalError:
+            pass # Already exists
+            
+        # Migration: Ensure YouTube columns exist
+        youtube_columns = [
+            ("youtube_enabled", "INTEGER DEFAULT 0"),
+            ("youtube_channel", "TEXT"),
+            ("youtube_announce_channel_id", "INTEGER"),
+            ("youtube_ping_role_id", "INTEGER"),
+            ("youtube_last_live_message_id", "INTEGER"),
+            ("youtube_last_check_ts", "REAL DEFAULT 0.0"),
+            ("youtube_last_seen_live_ts", "REAL DEFAULT 0.0"),
+            ("youtube_announced_this_stream", "INTEGER DEFAULT 0")
+        ]
+        for col, col_type in youtube_columns:
+            try:
+                conn.execute(f"ALTER TABLE guild_settings ADD COLUMN {col} {col_type};")
+            except sqlite3.OperationalError:
+                pass # Already exists
+
         conn.commit()
     finally:
         conn.close()
