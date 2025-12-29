@@ -4,227 +4,201 @@
 [![Python: 3.12+](https://img.shields.io/badge/Python-3.12+-blue.svg)](https://www.python.org/downloads/)
 [![Release: v1.0.0](https://img.shields.io/badge/Release-v1.0.0-green.svg)](https://github.com/Kasmodro/shani-arc-raiders-bot/releases)
 
-Shani is a comprehensive Discord bot tailored specifically for **ARC Raiders** communities. It enhances the gaming experience by streamlining squad management, player profiles, and stream notifications.
+Shani is a modern, feature-rich Discord bot built specifically for **ARC Raiders** communities. It simplifies squad creation, player matching, and stream notifications — all through a fully interactive Discord UI.
 
-## ⚡ Quick Start
+This project is open source, beginner-friendly, and designed to be easy to run on your own server.
+
+---
+
+## ✨ What Shani Does
+Shani improves your ARC Raiders Discord server by providing:
+*   🎧 **Automatic Voice Squads** (2-player, 3-player, or open)
+*   🧾 **Raider Setcards** (player profiles & matchmaking)
+*   🟣 **Twitch Live Alerts** (no Twitch API key required)
+*   🧭 **Interactive UI** using Slash Commands & Buttons
+*   🔒 **No administrator permissions required**
+
+---
+
+## ⚡ Quick Start (Beginner Friendly)
+This guide assumes basic Linux knowledge. Works on VPS, root servers, or local machines.
+
+### 1️⃣ Clone the Repository
 ```bash
 git clone https://github.com/Kasmodro/shani-arc-raiders-bot.git
 cd shani-arc-raiders-bot
-python3 -m venv venv && source venv/bin/activate
-pip install -r requirements.txt
-cp .env.example .env # Add your DISCORD_TOKEN to .env
-python3 bot.py
 ```
 
-## 🔗 Invite the Bot
+### 2️⃣ Create a Virtual Environment (Recommended)
+```bash
+python3 -m venv venv
+source venv/bin/activate
+```
 
-Use the official invite link below to add **Shani** to your Discord server.
+### 3️⃣ Install Dependencies
+```bash
+pip install -r requirements.txt
+```
 
-> ⚠️ Shani requires specific permissions to manage voice channels, squads, and interactive features.  
-> **Administrator privileges are NOT required.**  
-> Shani only requests the minimum permissions necessary to function.
+### 4️⃣ Configure the Bot Token
+Copy the example config:
+```bash
+cp .env.example .env
+```
+Edit the file (e.g., using `nano`):
+```bash
+nano .env
+```
+Insert your Discord bot token:
+```env
+DISCORD_TOKEN=YOUR_DISCORD_BOT_TOKEN_HERE
+```
+> 🔐 **Important:** The `.env` file is ignored by Git. Never commit your token. Never share it.
 
-### Invite URL
-https://discord.com/api/oauth2/authorize?client_id=1319253457599041537&permissions=285223056&scope=bot%20applications.commands
-
-> 🔐 Shani strictly adheres to the permissions listed above and never requests full administrator access.
-
-### Required Server Permissions
-Shani requires the following permissions to create and manage dynamic voice channels and interactive features:
-
-- **Manage Channels**
-- **Move Members**
-- **Send Messages**
-- **Embed Links**
-- **Read Message History**
-- **Manage Threads**
-- **Manage Messages** *(bot-owned content only)*
-- **Connect / Speak** *(voice features)*
-
-ℹ️ Ensure the bot has the necessary **channel permissions** within the target categories and channels.
-
-For a detailed breakdown, see the **[PERMISSIONS.md](PERMISSIONS.md)** guide.
-
-## 🚀 Key Features
-- **Auto Voice Channels:** Dynamic squad channels (2-player, 3-player, or open squads).
-- **Raider Setcards:** Comprehensive player profiles to facilitate better squad matching.
-- **Twitch Live Alerts:** Real-time stream notifications—no Twitch API key required.
-- **Interactive UI:** A modern experience fully driven by Discord Slash Commands and Buttons.
+### 5️⃣ Start the Bot
+```bash
+python3 bot.py
+```
+If everything is correct, Shani will appear online in Discord.
 
 ---
 
-Ein leistungsstarker Discord-Bot für die Verwaltung von Raider-Setcards, dynamische Auto-Voice Channels (2er, 3er, Open) und Twitch-Live-Alerts ohne API-Key. Mit vollständig interaktivem UI über Slash-Commands und Buttons.
+## 🔗 Invite Shani to Your Server
+Use the official invite link:
+[**Invite URL**](https://discord.com/api/oauth2/authorize?client_id=1319253457599041537&permissions=285223056&scope=bot%20applications.commands)
 
-## 🚀 Features Detail (Deutsch)
+### ⚠️ Permissions Notice
+*   **Administrator permission is NOT required.**
+*   Shani only requests minimum necessary permissions.
+*   No hidden or dynamic permission escalation.
 
-### ✨ Interaktive Benutzeroberfläche
-*   **Zentrales Menü:** Der Befehl `/shani` ist der einzige Einstiegspunkt, den User und Admins brauchen. Alles lässt sich über Buttons und Menüs steuern.
-*   **Geführtes Setup:** Admins können den Bot über das "Admin Setup" Menü konfigurieren (Rollen, Kanäle, Twitch) – kein Auswendiglernen von Befehlen nötig.
+### 🔐 Required Discord Permissions
+Shani needs these permissions to function correctly:
+*   Manage Channels
+*   Move Members
+*   Send Messages
+*   Embed Links
+*   Read Message History
+*   Manage Threads
+*   Manage Messages *(bot-owned content only)*
+*   Connect / Speak *(voice features)*
 
-### 🛠️ Raider-Setcards
-*   **Individuelle Profile:** User können ihre Gaming-Infos (Embark ID, Plattform, Erfahrung, Spielstil) hinterlegen.
-*   **Interaktive Suche:** Finde Mitspieler direkt über das `/shani` Menü mit Filtern wie Spielstil, Plattform oder Erfahrung.
-*   **Intelligentes Matching:** Die Suche versteht Teilbegriffe und erlaubt Mehrfachauswahl bei den Interessen.
-*   **Automatische Posts:** Setcards werden in einem konfigurierten Kanal gepostet und bei Änderungen automatisch aktualisiert.
+> 📌 Make sure the bot also has these permissions inside the target categories. For a detailed breakdown, see **[PERMISSIONS.md](PERMISSIONS.md)**.
 
-### 🔊 Auto-Voice 2.0 (Squad Channels)
-*   **Drei Modi:** Dedizierte Join-Channels für **2er Squads**, **3er Squads** und **Open Squads** (unbegrenzt).
-*   **Setcard-Integration:** Der Bot postet automatisch die Setcard des Squad-Leiters in den Textchat des Voice-Channels, damit beigetretene Spieler sofort wissen, mit wem sie spielen.
-*   **Eingeschränkte Rechte:** User können das Squad-Limit nicht mehr manipulieren, behalten aber Moderationsrechte (Kicken/Moven) und können den **Voice-Status** setzen.
-*   **Intelligenter Cleanup:** Aktiver Scan der Voice-Kategorie sorgt dafür, dass leere Kanäle sofort und zuverlässig gelöscht werden.
+---
 
-### 🟣 Twitch Live-Alerts (No-API)
-*   **Einfaches Setup:** Keine Registrierung bei der Twitch-API nötig. Konfiguration bequem über das Admin-Menü.
-*   **Automatisches Editieren:** Live-Nachrichten werden bei Stream-Ende automatisch in Offline-Meldungen umgewandelt.
+## 🚀 Main Features
 
-### 🔐 Rollen- & Berechtigungssystem
-*   **Hauptmenü:** Zentraler Einstiegspunkt über `/shani` mit rollenbasierter Button-Anzeige.
-*   **Admin- & Mod-Rollen:** Konfigurierbare Rollen für erweiterten Zugriff auf Bot-Funktionen.
-*   **Sichtbarkeit:** Administrative Befehle sind für normale User in Discord unsichtbar.
+### 🎧 Auto Voice Channels
+Separate join channels for **2-Player Squads**, **3-Player Squads**, and **Open Squads**.
+*   Channels are created dynamically.
+*   Empty channels are removed automatically.
 
-## 🛡️ Discord Permissions & Intents
-Damit alle Funktionen reibungslos laufen, benötigt der Bot folgende Einstellungen im Discord Developer Portal:
+### 🧾 Raider Setcards
+Players create personal profiles including playstyle, platform, and experience.
+*   Profiles are searchable via interactive menus.
+*   Setcards auto-update when edited.
 
-### Privileged Gateway Intents
-*   **Presence Intent:** Aus (nicht benötigt)
-*   **Server Members Intent:** AN (für Rollenprüfung & Setcards)
-*   **Message Content Intent:** AN (für Befehlsverarbeitung)
+### 🔊 Voice Channel Integration
+*   Squad leader’s setcard is posted automatically in the channel's text chat.
+*   Players instantly know who they’re joining.
+*   Users cannot manipulate squad limits.
+*   Leaders retain moderation controls.
 
-### Bot Permissions (OAuth2 Scope: `bot` + `applications.commands`)
-*   **Manage Channels:** Erstellen/Löschen der Squad-Kanäle
-*   **Move Members:** Verschieben in neue Squads
-*   **Manage Roles:** Rollenprüfung beim Setup
-*   **Send Messages / Embed Links:** Benachrichtigungen & Setcards
-*   **Connect / Speak:** Voice-Support
+### 🟣 Twitch Live Alerts (No API)
+*   No Twitch API registration required.
+*   Setup via admin menu.
+*   Live messages auto-update when stream ends.
 
-⚠️ **Only grant the permissions listed above. Administrator permissions are not required.**
+### 🧭 Interactive UI
+*   One command: `/shani`
+*   Buttons & menus only — no command spam.
+*   Admin features are hidden from regular users.
 
-## 📋 Voraussetzungen
-*   Python 3.12+
-*   `discord.py`
-*   `aiohttp`
-*   `python-dotenv`
-*   `PyNaCl` (für Voice Support)
+---
 
-## ⚙️ Installation
+## 🛠️ Admin Usage
+1.  Run `/shani`
+2.  Click **Admin Setup**
+3.  Configure Roles, Channels, and Twitch notifications.
+Everything is guided — no memorizing commands.
 
-1.  **Repository klonen:**
-    ```bash
-    git clone https://github.com/Kasmodro/shani-arc-raiders-bot.git
-    cd shani-arc-raiders-bot
-    ```
+## 👤 User Usage
+1.  Run `/shani`
+2.  Edit your **Raider Setcard**.
+3.  Search for other players or join squads via voice channels.
 
-2.  **Abhängigkeiten installieren:**
-    ```bash
-    python3 -m venv venv
-    source venv/bin/activate
-    pip install -r requirements.txt
-    ```
+---
 
-3.  **Konfiguration (.env Datei):**
-    Der Bot benötigt einen Discord-Token, um online zu gehen. Diesen speicherst du sicher in einer Datei namens `.env`.
-    
-    *   Verwende die Vorlage [.env.example](.env.example) als Basis:
-        ```bash
-        cp .env.example .env
-        ```
-    *   Öffne die Datei (z. B. mit `nano .env`) und füge deinen Bot-Token ein:
-        ```env
-        DISCORD_TOKEN=DEIN_BOT_TOKEN_HIER_EINSETZEN
-        ```
-    *   *Hinweis:* Die `.env` Datei wird von Git ignoriert, damit dein Token nicht öffentlich auf GitHub landet.
-
-4.  **Bot starten:**
-    ```bash
-    python3 bot.py
-    ```
-
-## 🖥️ Automatischer Start (Systemd Service)
-Damit der Bot nach einem Server-Neustart automatisch startet, empfiehlt sich die Einrichtung als System-Service:
-
-1.  **Service-Datei erstellen:** `sudo nano /etc/systemd/system/shani.service`
-2.  **Inhalt einfügen** (Pfade anpassen!):
-    ```ini
-    [Unit]
-    Description=Shani Discord Bot
-    After=network.target
-
-    [Service]
-    Type=simple
-    User=DEIN_USER
-    WorkingDirectory=/home/DEIN_USER/shani-arc-raiders-bot
-    ExecStart=/usr/bin/python3 bot.py
-    Restart=always
-
-    [Install]
-    WantedBy=multi-user.target
-    ```
-3.  **Aktivieren:**
-    ```bash
-    sudo systemctl daemon-reload
-    sudo systemctl enable shani.service
-    sudo systemctl start shani.service
-    ```
-
-## 🛠️ Bedienung
-
-### Für Admins
-Nutze `/shani` und klicke auf **"Admin Setup"**. Dort kannst du schrittweise Rollen, Kanäle und Twitch konfigurieren.
-
-### Für User
-Nutze `/shani`, um deine **Setcard zu bearbeiten** oder nach **Raidern zu suchen**.
-
-## 🧹 Fehlerbehebung (Doppelte Commands)
-Falls Slash-Commands doppelt angezeigt werden, führe einmalig das Bereinigungs-Skript aus:
+## 🧹 Fix: Duplicate Slash Commands
+If you ever see duplicate commands:
 ```bash
 python3 cleanup_commands.py
 ```
-Danach den Bot neu starten und Discord (Strg+R) aktualisieren.
-
-## 🤝 Community & Forks
-
-This project is intentionally open-source.
-
-You are **explicitly allowed and encouraged** to:
-- fork this repository
-- modify the code
-- run your own version of the bot
-- adapt it for your own Discord community
-
-No permission is required — just keep the original license and credits.
-
-Forks do **not** grant any official support or endorsement.
-
-If you build something cool on top of it, feel free to share it with the community 🚀
-
-## 🛡️ Disclaimer
-
-This bot is provided **"as is"**, without warranty of any kind.
-
-Server owners and administrators are **fully responsible** for:
-- how the bot is configured
-- which permissions it is granted
-- how it is used within their Discord server
-
-The author is **not liable** for:
-- moderation issues
-- data loss
-- misuse by server members
-- Discord ToS violations caused by misconfiguration
-- actions taken by Discord moderators or automated systems
-
-Use at your own risk.
-
-### 🇩🇪 Haftungsausschluss (Kurzfassung)
-
-Die Nutzung des Bots erfolgt **auf eigene Verantwortung**.
-
-Server-Admins sind selbst dafür verantwortlich, welche Rechte der Bot erhält und wie er eingesetzt wird. Der Entwickler übernimmt keine Haftung für Fehlkonfigurationen, Missbrauch oder Regelverstöße auf dem Server.
-
-## 📄 Lizenz
-Dieses Projekt ist unter der **MIT-Lizenz** lizenziert. Weiterverwendung oder Anpassungen sind ausdrücklich erlaubt, solange der ursprüngliche Autor genannt wird.
+Then:
+1.  Restart the bot.
+2.  Reload Discord (**CTRL + R**).
 
 ---
-### 🆘 Support
-*   **Bug reports & feature requests:** [GitHub Issues](https://github.com/Kasmodro/shani-arc-raiders-bot/issues)
-*   **Setup questions & discussion:** [Discord Server](https://discord.gg/UhhJtFteun)
+
+## 🖥️ Run Shani as a System Service (Optional)
+Recommended for VPS / 24-7 servers.
+
+### 1. Create Service File
+```bash
+sudo nano /etc/systemd/system/shani.service
+```
+
+### 2. Example Configuration
+```ini
+[Unit]
+Description=Shani Discord Bot
+After=network.target
+
+[Service]
+Type=simple
+User=YOUR_USER
+WorkingDirectory=/home/YOUR_USER/shani-arc-raiders-bot
+ExecStart=/usr/bin/python3 bot.py
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
+```
+
+### 3. Enable & Start
+```bash
+sudo systemctl daemon-reload
+sudo systemctl enable shani
+sudo systemctl start shani
+```
+
+---
+
+## 🤝 Open Source & Forks
+This project is intentionally open source. You are free to:
+*   Fork the repository.
+*   Modify the code.
+*   Run your own version.
+*   Adapt it for other communities.
+
+✔ No permission required.  
+✔ Keep the MIT license & credits.  
+If you build something cool — share it 🚀
+
+---
+
+## 🛡️ Disclaimer
+This software is provided **"as is"**, without warranty. Server owners are responsible for bot configuration, assigned permissions, and usage within their server.
+The author is not liable for moderation issues, data loss, Discord ToS violations, or misconfiguration.
+
+---
+
+## 📄 License
+Licensed under the **MIT License**. Free to use, modify, and distribute with attribution.
+
+---
+
+## 🆘 Support
+*   🐞 **Bug reports & feature requests** → [GitHub Issues](https://github.com/Kasmodro/shani-arc-raiders-bot/issues)
+*   💬 **Questions & discussion** → [Discord Server](https://discord.gg/UhhJtFteun)
