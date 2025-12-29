@@ -25,6 +25,8 @@ Use the official invite link below to add **Shani** to your Discord server.
 ### Invite URL
 https://discord.com/api/oauth2/authorize?client_id=1319253457599041537&permissions=285223056&scope=bot%20applications.commands
 
+> 🔐 Shani only uses the permissions listed above and never requests administrator access.
+
 ### Required Server Permissions
 - Manage Channels
 - Move Members
