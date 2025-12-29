@@ -1,33 +1,49 @@
 # Changelog – Shani Bot
-Alle relevanten Änderungen am Shani-Bot
+Alle relevanten Änderungen am Shani-Bot | All relevant changes to Shani Bot
 
-[1.1.0] – 2025-12-29
-✨ Konsolen-Support & Anpassbarkeit
+---
 
-• **Anpassbarer Bot-Name:** Admins können den Anzeigenamen des Bots im Menü und in den Embeds nun ändern (z.B. statt "Shani" ein eigener Name). Der Standard bleibt "Shani".
-• **Slash-Command Dokumentation:** Anleitung zur manuellen Änderung des Hauptbefehls `/shani` (z.B. in `/menu`) in der README ergänzt.
-• **Button-basierte Squad-Erstellung:** Neuer Befehl `/squad` und Button im `/shani` Menü. Dies ermöglicht Konsolenspielern (und PC-Usern) das Erstellen von Kanälen per Klick, ohne einen Join-Channel nutzen zu müssen.
-• **Automatischer 2-Minuten-Cleanup:** Kanäle, die erstellt, aber nicht betreten wurden, werden nach 2 Minuten automatisch gelöscht, um die Serverübersicht zu wahren.
-• **Verbesserte User-Experience:** Bei manueller Erstellung erhält der User einen direkten Link zum Kanal, falls er nicht automatisch verschoben werden konnte.
-• **Modulare Struktur:** Auslagerung der Twitch-Logik (Scraping, Benachrichtigungen, Befehle) in ein eigenes Modul `modules/twitch.py` zur besseren Wartbarkeit.
+## [1.1.0] – 2025-12-29
+### 🇩🇪 Deutsch
+✨ **Konsolen-Support & Anpassbarkeit**
+- **Anpassbarer Bot-Name:** Admins können den Anzeigenamen des Bots im Menü und in den Embeds nun ändern.
+- **Slash-Command Dokumentation:** Anleitung zur manuellen Änderung des Hauptbefehls `/shani` in der README ergänzt.
+- **Button-basierte Squad-Erstellung:** Neuer Befehl `/squad` und Button im `/shani` Menü für Konsolenspieler.
+- **Automatischer 2-Minuten-Cleanup:** Leere Kanäle werden nach 2 Minuten gelöscht.
+- **Modulare Struktur:** Twitch-Logik in `modules/twitch.py` ausgelagert.
 
-🛠️ Fehlerbehebungen & Stabilität
-• **Datenbank-Migration:** Automatische Migration der Spalte `bot_custom_name` für bestehende Installationen hinzugefügt, um Startfehler zu vermeiden.
+🛠️ **Fehlerbehebungen**
+- **Datenbank-Migration:** Automatische Migration für `bot_custom_name` hinzugefügt.
 
-[1.0.0] – 2025-12-29
-✨ Das interaktive UI-Update (Full Interactive Release)
+### 🇺🇸 English
+✨ **Console Support & Customization**
+- **Customizable Bot Name:** Admins can now change the bot's display name in menus and embeds.
+- **Slash Command Documentation:** Added instructions to README for renaming the `/shani` command.
+- **Button-based Squad Creation:** New `/squad` command and button in `/shani` menu for console players.
+- **Automatic 2-Minute Cleanup:** Unused channels are deleted after 2 minutes.
+- **Modular Structure:** Moved Twitch logic to `modules/twitch.py`.
 
-• **Zentrales Hauptmenü:** Der Befehl `/shani` ist nun die vollständige Schaltzentrale für Raider und Admins.
-• **Interaktives Admin-Setup:** Komplette Ersteinrichtung des Bots (Rollen, Kanäle, Auto-Voice, Twitch) direkt über Buttons und Auswahlmenüs, ohne Slash-Commands tippen zu müssen.
-• **Interaktive Raider-Suche:** Neue Suchfunktion im `/shani` Menü mit Filter-Auswahl (Plattform, Erfahrung, Orientierung).
-• **Intelligente Suche:** Die Suche unterstützt nun Teil-Matches (findet "PvE" auch wenn nach "PvE (Spieler gegen ARC)" gefiltert wird) und Mehrfachauswahl bei der Orientierung.
-• **Auto-Voice Integration:** Automatische Vorstellung des Squad-Leiters durch Posten seiner Setcard im Textchat des neu erstellten Voice-Channels.
-• **Benutzerfreundlichkeit:** Umbenennung von Begriffen für bessere Verständlichkeit (z.B. "PvE (Spieler gegen ARC)").
+🛠️ **Bug Fixes**
+- **Database Migration:** Added automatic migration for `bot_custom_name` column.
 
-🛠️ Fehlerbehebungen & Optimierungen
-• Behebung von `TypeError: 'Command' object is not callable` bei manuellen Command-Aufrufen im Code.
-• Optimierung der Suchlogik auf ODER-Verknüpfung für flexiblere Raider-Treffer.
-• Verbessertes Member-Fetching, falls User nicht im Bot-Cache vorhanden sind.
+---
+
+## [1.0.0] – 2025-12-29
+### 🇩🇪 Deutsch
+✨ **Das interaktive UI-Update**
+- **Hauptmenü:** `/shani` als zentrale Schaltstelle.
+- **Admin-Setup:** Komplette Einrichtung über Buttons & Menüs.
+- **Raider-Suche:** Neue Filter (Plattform, Erfahrung, Orientierung).
+- **Auto-Voice:** Setcard-Post im Channel-Textchat.
+
+### 🇺🇸 English
+✨ **Interactive UI Update**
+- **Main Menu:** `/shani` as the central hub.
+- **Admin Setup:** Full configuration via buttons & menus.
+- **Raider Search:** New filters (Platform, Experience, Orientation).
+- **Auto-Voice:** Post setcards in channel text chat.
+
+---
 
 [0.9.2] – 2025-12-27 (Aktuelles Update)
 ✨ Berechtigungs-System & Shani-Menü
