@@ -577,6 +577,18 @@ async def on_voice_state_update(member: discord.Member, before: discord.VoiceSta
             await channel.set_permissions(member, **perms_kwargs)
             
             await member.move_to(channel)
+
+            # --- Setcard-Info im Channel-Textchat ---
+            from modules.setcards import get_card, build_setcard_embed
+            card = await get_card(member.guild.id, member.id)
+            if card:
+                embed = build_setcard_embed(member, card)
+                embed.title = f"Besitzer von {channel.name}"
+                try:
+                    await channel.send(embed=embed)
+                except:
+                    pass
+
             # Nach dem Verschieben kurz warten und aufräumen
             await asyncio.sleep(1.5)
             await cleanup_empty_squads(member.guild, int(category_id))
@@ -694,13 +706,17 @@ class ShaniMenuView(discord.ui.View):
             btn_find = discord.ui.Button(label="Raider suchen", style=discord.ButtonStyle.secondary, custom_id="shani_menu_find")
             self.add_item(btn_find)
 
+            # Neuer Button für Raider-Liste
+            btn_list = discord.ui.Button(label="Alle Raider anzeigen", style=discord.ButtonStyle.secondary, custom_id="shani_menu_list")
+            self.add_item(btn_list)
+
         if is_mod:
             btn_status = discord.ui.Button(label="Bot Status", style=discord.ButtonStyle.success, custom_id="shani_menu_status")
             self.add_item(btn_status)
         
         if is_admin:
-             btn_roles = discord.ui.Button(label="Rollen-Setup", style=discord.ButtonStyle.danger, custom_id="shani_menu_roles")
-             self.add_item(btn_roles)
+             btn_admin = discord.ui.Button(label="Admin Setup", style=discord.ButtonStyle.danger, custom_id="shani_menu_admin")
+             self.add_item(btn_admin)
 
 @bot.tree.command(name="shani", description="Öffnet das Shani-Hauptmenü.")
 async def shani(interaction: discord.Interaction):
@@ -727,15 +743,264 @@ async def shani_menu_listener(interaction: discord.Interaction):
 
     # Slash commands triggern (simuliert)
     if cid == "shani_menu_sc":
-        # Wir können keine Slash Commands direkt triggern, aber wir rufen die Logik auf
-        # Einfachheitshalber verweisen wir hier auf die Befehle
-        await interaction.response.send_message("Nutze `/setcard me` oder `/setcard edit`.", ephemeral=True)
+        # Direkt die Edit-View aufrufen
+        from modules.setcards import get_card, SetcardEditViewPage1
+        card = await get_card(interaction.guild_id, interaction.user.id)
+        view = SetcardEditViewPage1(interaction.user, card)
+        content = view._header() + "\n\n" + view._status_lines()
+        await interaction.response.send_message(content=content, view=view, ephemeral=True)
+        view.message = await interaction.original_response()
     elif cid == "shani_menu_find":
-        await interaction.response.send_message("Nutze `/setcard find`.", ephemeral=True)
+        # Interaktive Suche öffnen
+        from modules.setcards import ORIENTATION_OPTIONS, EXPERIENCE_OPTIONS, PLATFORM_OPTIONS
+        view = RaiderSearchView()
+        # Optionen laden
+        view.orientation_select.options = [discord.SelectOption(label=o, value=o) for o in ORIENTATION_OPTIONS]
+        view.experience_select.options = [discord.SelectOption(label=o, value=o) for o in EXPERIENCE_OPTIONS]
+        view.platform_select.options = [discord.SelectOption(label=o, value=o) for o in PLATFORM_OPTIONS]
+        
+        embed = discord.Embed(
+            title="🔍 Raider suchen",
+            description="Wähle deine Filter aus, um passende Mitspieler zu finden.",
+            color=discord.Color.green()
+        )
+        await interaction.response.send_message(embed=embed, view=view, ephemeral=True)
+    elif cid == "shani_menu_list":
+        # Zeigt einfach alle Raider an
+        from modules.setcards import get_setcard_channel_id
+        sc_channel_id = await get_setcard_channel_id(interaction.guild_id)
+        if sc_channel_id:
+            channel = interaction.guild.get_channel(sc_channel_id)
+            if channel:
+                await interaction.response.send_message(f"Schau mal in {channel.mention} vorbei, dort findest du alle Setcards!", ephemeral=True)
+            else:
+                await interaction.response.send_message("Der Setcard-Kanal wurde nicht gefunden.", ephemeral=True)
+        else:
+            await interaction.response.send_message("Es ist noch kein Setcard-Kanal konfiguriert.", ephemeral=True)
     elif cid == "shani_menu_status":
-        await shani_status(interaction)
-    elif cid == "shani_menu_roles":
-        await interaction.response.send_message("Nutze `/shani_setup_roles`.", ephemeral=True)
+        await shani_status.callback(interaction)
+    elif cid == "shani_menu_admin":
+        view = ShaniSetupView()
+        embed = discord.Embed(
+            title="🛠️ Shani Admin Setup",
+            description="Hier kannst du alle wichtigen Funktionen des Bots konfigurieren.",
+            color=discord.Color.red()
+        )
+        await interaction.response.send_message(embed=embed, view=view, ephemeral=True)
+
+class RaiderSearchView(discord.ui.View):
+    def __init__(self):
+        super().__init__(timeout=300)
+        self.filters = {"orientation": None, "experience": None, "platform": None}
+
+    @discord.ui.select(placeholder="🎮 Orientierung (Mehrfachauswahl)", min_values=0, max_values=4, row=0)
+    async def orientation_select(self, interaction: discord.Interaction, select: discord.ui.Select):
+        self.filters["orientation"] = select.values if select.values else None
+        await interaction.response.defer()
+
+    @discord.ui.select(placeholder="🎓 Erfahrung", min_values=0, max_values=1, row=1)
+    async def experience_select(self, interaction: discord.Interaction, select: discord.ui.Select):
+        self.filters["experience"] = select.values[0] if select.values else None
+        await interaction.response.defer()
+
+    @discord.ui.select(placeholder="🖥️ Plattform", min_values=0, max_values=1, row=2)
+    async def platform_select(self, interaction: discord.Interaction, select: discord.ui.Select):
+        self.filters["platform"] = select.values[0] if select.values else None
+        await interaction.response.defer()
+
+    @discord.ui.button(label="🔍 Suchen", style=discord.ButtonStyle.success, row=3)
+    async def btn_search(self, interaction: discord.Interaction, button: discord.ui.Button):
+        from modules.setcards import list_cards_in_guild, build_setcard_embed, _match_card
+        
+        try:
+            logger.info(f"🔍 [RaiderSearch] Start | Filter: {self.filters}")
+            cards = await list_cards_in_guild(interaction.guild_id)
+            
+            # Filtern
+            matches = []
+            for c in cards:
+                if _match_card(c, 
+                               self.filters["orientation"], 
+                               self.filters["experience"],
+                               self.filters["platform"],
+                               None, None, None):
+                    matches.append(c)
+
+            logger.info(f"🔍 [RaiderSearch] Treffer: {len(matches)}")
+
+            if not matches:
+                await interaction.response.send_message("❌ Keine passenden Raider gefunden mit diesen Filtern.", ephemeral=True)
+                return
+
+            # Zeige Ergebnisse wie im Slash-Command als Liste, falls es viele sind
+            if len(matches) > 3:
+                lines = []
+                for m in matches[:20]:
+                    member = interaction.guild.get_member(m["user_id"])
+                    name = member.mention if member else f"<@{m['user_id']}>"
+                    ori = "·".join(m.get("orientation") or [])
+                    lines.append(f"{name} — {ori} — {m.get('experience')} — {m.get('platform')}")
+                
+                embed = discord.Embed(
+                    title="🔎 Suchergebnisse",
+                    description="\n".join(lines),
+                    color=discord.Color.green()
+                )
+                await interaction.response.send_message(embed=embed, ephemeral=True)
+            else:
+                # Bei wenigen Treffern Einzel-Embeds
+                await interaction.response.send_message(f"✅ Treffer gefunden:", ephemeral=True)
+                for m in matches:
+                    member = interaction.guild.get_member(m["user_id"])
+                    if not member:
+                        try: member = await interaction.guild.fetch_member(m["user_id"])
+                        except: pass
+                    if member:
+                        await interaction.followup.send(embed=build_setcard_embed(member, m), ephemeral=True)
+        except Exception as e:
+            logger.error(f"❌ Fehler bei RaiderSearch: {e}", exc_info=True)
+            await interaction.response.send_message(f"❌ Ein interner Fehler ist aufgetreten: {e}", ephemeral=True)
+
+class ShaniSetupView(discord.ui.View):
+    def __init__(self):
+        super().__init__(timeout=300)
+
+    @discord.ui.button(label="Rollen festlegen", style=discord.ButtonStyle.primary, row=0)
+    async def btn_roles(self, interaction: discord.Interaction, button: discord.ui.Button):
+        view = RoleSetupView()
+        embed = discord.Embed(
+            title="👑 Rollen-Setup",
+            description="Wähle die Rollen für die verschiedenen Zugriffsebenen aus.",
+            color=discord.Color.blue()
+        )
+        await interaction.response.send_message(embed=embed, view=view, ephemeral=True)
+
+    @discord.ui.button(label="Setcard-Kanal", style=discord.ButtonStyle.primary, row=0)
+    async def btn_sc_channel(self, interaction: discord.Interaction, button: discord.ui.Button):
+        view = SetcardChannelSetupView()
+        embed = discord.Embed(
+            title="🛠️ Setcard-Kanal",
+            description="Wähle den Kanal aus, in dem die Setcards der Raider gepostet werden sollen.",
+            color=discord.Color.blue()
+        )
+        await interaction.response.send_message(embed=embed, view=view, ephemeral=True)
+
+    @discord.ui.button(label="Auto-Voice", style=discord.ButtonStyle.secondary, row=1)
+    async def btn_voice(self, interaction: discord.Interaction, button: discord.ui.Button):
+        view = AutoVoiceSetupView()
+        embed = discord.Embed(
+            title="🔊 Auto-Voice Setup",
+            description="Wähle die Join-Channels und die Ziel-Kategorie aus.",
+            color=discord.Color.blue()
+        )
+        await interaction.response.send_message(embed=embed, view=view, ephemeral=True)
+
+    @discord.ui.button(label="Twitch-Live", style=discord.ButtonStyle.secondary, row=1)
+    async def btn_twitch(self, interaction: discord.Interaction, button: discord.ui.Button):
+        view = TwitchSetupView()
+        embed = discord.Embed(
+            title="🟣 Twitch-Live Setup",
+            description="Konfiguriere den Twitch-Kanal und die Benachrichtigungen.",
+            color=discord.Color.purple()
+        )
+        await interaction.response.send_message(embed=embed, view=view, ephemeral=True)
+
+    @discord.ui.button(label="Aktueller Status", style=discord.ButtonStyle.success, row=2)
+    async def btn_check(self, interaction: discord.Interaction, button: discord.ui.Button):
+        await shani_status.callback(interaction)
+
+class RoleSetupView(discord.ui.View):
+    def __init__(self):
+        super().__init__(timeout=180)
+
+    @discord.ui.select(cls=discord.ui.RoleSelect, placeholder="👑 Admin-Rolle wählen", row=0)
+    async def select_admin(self, interaction: discord.Interaction, select: discord.ui.RoleSelect):
+        role = select.values[0]
+        await update_guild_cfg(interaction.guild_id, role_admin_id=role.id)
+        await interaction.response.send_message(f"✅ Admin-Rolle auf {role.mention} gesetzt.", ephemeral=True)
+
+    @discord.ui.select(cls=discord.ui.RoleSelect, placeholder="🛡️ Mod-Rolle wählen", row=1)
+    async def select_mod(self, interaction: discord.Interaction, select: discord.ui.RoleSelect):
+        role = select.values[0]
+        await update_guild_cfg(interaction.guild_id, role_mod_id=role.id)
+        await interaction.response.send_message(f"✅ Mod-Rolle auf {role.mention} gesetzt.", ephemeral=True)
+
+    @discord.ui.select(cls=discord.ui.RoleSelect, placeholder="📝 Setcard-Rolle (optional)", row=2)
+    async def select_setcard(self, interaction: discord.Interaction, select: discord.ui.RoleSelect):
+        role = select.values[0]
+        await update_guild_cfg(interaction.guild_id, role_setcard_id=role.id)
+        await interaction.response.send_message(f"✅ Setcard-Rolle auf {role.mention} gesetzt.", ephemeral=True)
+
+class SetcardChannelSetupView(discord.ui.View):
+    def __init__(self):
+        super().__init__(timeout=180)
+
+    @discord.ui.select(cls=discord.ui.ChannelSelect, channel_types=[discord.ChannelType.text], placeholder="📁 Setcard-Kanal wählen")
+    async def select_channel(self, interaction: discord.Interaction, select: discord.ui.ChannelSelect):
+        channel = select.values[0]
+        from modules.setcards import set_setcard_channel
+        await set_setcard_channel(interaction.guild_id, channel.id)
+        await interaction.response.send_message(f"✅ Setcard-Kanal auf {channel.mention} gesetzt.", ephemeral=True)
+
+class AutoVoiceSetupView(discord.ui.View):
+    def __init__(self):
+        super().__init__(timeout=300)
+
+    @discord.ui.select(cls=discord.ui.ChannelSelect, channel_types=[discord.ChannelType.voice], placeholder="👥 2er Join-Channel wählen", row=0)
+    async def select_2(self, interaction: discord.Interaction, select: discord.ui.ChannelSelect):
+        await update_guild_cfg(interaction.guild_id, create_channel_id=select.values[0].id)
+        await interaction.response.send_message(f"✅ 2er Join-Channel auf {select.values[0].mention} gesetzt.", ephemeral=True)
+
+    @discord.ui.select(cls=discord.ui.ChannelSelect, channel_types=[discord.ChannelType.voice], placeholder="👥 3er Join-Channel wählen", row=1)
+    async def select_3(self, interaction: discord.Interaction, select: discord.ui.ChannelSelect):
+        await update_guild_cfg(interaction.guild_id, create_channel_3_id=select.values[0].id)
+        await interaction.response.send_message(f"✅ 3er Join-Channel auf {select.values[0].mention} gesetzt.", ephemeral=True)
+
+    @discord.ui.select(cls=discord.ui.ChannelSelect, channel_types=[discord.ChannelType.voice], placeholder="🔓 Open Join-Channel wählen", row=2)
+    async def select_open(self, interaction: discord.Interaction, select: discord.ui.ChannelSelect):
+        await update_guild_cfg(interaction.guild_id, create_channel_open_id=select.values[0].id)
+        await interaction.response.send_message(f"✅ Open Join-Channel auf {select.values[0].mention} gesetzt.", ephemeral=True)
+
+    @discord.ui.select(cls=discord.ui.ChannelSelect, channel_types=[discord.ChannelType.category], placeholder="📁 Ziel-Kategorie wählen", row=3)
+    async def select_cat(self, interaction: discord.Interaction, select: discord.ui.ChannelSelect):
+        await update_guild_cfg(interaction.guild_id, voice_category_id=select.values[0].id)
+        await interaction.response.send_message(f"✅ Ziel-Kategorie auf **{select.values[0].name}** gesetzt.", ephemeral=True)
+
+class TwitchSetupView(discord.ui.View):
+    def __init__(self):
+        super().__init__(timeout=300)
+
+    @discord.ui.button(label="Twitch-Kanal setzen", style=discord.ButtonStyle.primary, row=0)
+    async def btn_channel(self, interaction: discord.Interaction, button: discord.ui.Button):
+        await interaction.response.send_modal(TwitchChannelModal())
+
+    @discord.ui.select(cls=discord.ui.ChannelSelect, channel_types=[discord.ChannelType.text], placeholder="📢 Ankündigungs-Kanal wählen", row=1)
+    async def select_announce(self, interaction: discord.Interaction, select: discord.ui.ChannelSelect):
+        await update_guild_cfg(interaction.guild_id, twitch_announce_channel_id=select.values[0].id)
+        await interaction.response.send_message(f"✅ Ankündigungs-Kanal auf {select.values[0].mention} gesetzt.", ephemeral=True)
+
+    @discord.ui.select(cls=discord.ui.RoleSelect, placeholder="🔔 Ping-Rolle wählen (optional)", row=2)
+    async def select_ping(self, interaction: discord.Interaction, select: discord.ui.RoleSelect):
+        role = select.values[0]
+        await update_guild_cfg(interaction.guild_id, twitch_ping_role_id=role.id)
+        await interaction.response.send_message(f"✅ Ping-Rolle auf {role.mention} gesetzt.", ephemeral=True)
+
+    @discord.ui.button(label="Twitch-Funktion aktivieren", style=discord.ButtonStyle.success, row=3)
+    async def btn_enable(self, interaction: discord.Interaction, button: discord.ui.Button):
+        await update_guild_cfg(interaction.guild_id, twitch_enabled=1)
+        await interaction.response.send_message("✅ Twitch-Live Benachrichtigungen wurden aktiviert.", ephemeral=True)
+
+class TwitchChannelModal(discord.ui.Modal, title="Twitch Kanal festlegen"):
+    twitch_input = discord.ui.TextInput(
+        label="Twitch Kanal-Name oder URL",
+        placeholder="z.B. shordje oder https://twitch.tv/shordje",
+        required=True
+    )
+
+    async def on_submit(self, interaction: discord.Interaction):
+        channel = extract_twitch_channel(self.twitch_input.value)
+        await update_guild_cfg(interaction.guild_id, twitch_channel=channel)
+        await interaction.response.send_message(f"✅ Twitch-Kanal auf **{channel}** gesetzt.", ephemeral=True)
 
 @bot.tree.command(name="shani_setup_roles", description="Legt Admin-, Mod- und Setcard-Rollen fest.")
 @app_commands.checks.has_permissions(manage_guild=True)

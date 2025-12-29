@@ -1,6 +1,21 @@
 # Changelog – Shani Bot
 Alle relevanten Änderungen am Shani-Bot
 
+[1.0.0] – 2025-12-29
+✨ Das interaktive UI-Update (Full Interactive Release)
+
+• **Zentrales Hauptmenü:** Der Befehl `/shani` ist nun die vollständige Schaltzentrale für Raider und Admins.
+• **Interaktives Admin-Setup:** Komplette Ersteinrichtung des Bots (Rollen, Kanäle, Auto-Voice, Twitch) direkt über Buttons und Auswahlmenüs, ohne Slash-Commands tippen zu müssen.
+• **Interaktive Raider-Suche:** Neue Suchfunktion im `/shani` Menü mit Filter-Auswahl (Plattform, Erfahrung, Orientierung).
+• **Intelligente Suche:** Die Suche unterstützt nun Teil-Matches (findet "PvE" auch wenn nach "PvE (Spieler gegen ARC)" gefiltert wird) und Mehrfachauswahl bei der Orientierung.
+• **Auto-Voice Integration:** Automatische Vorstellung des Squad-Leiters durch Posten seiner Setcard im Textchat des neu erstellten Voice-Channels.
+• **Benutzerfreundlichkeit:** Umbenennung von Begriffen für bessere Verständlichkeit (z.B. "PvE (Spieler gegen ARC)").
+
+🛠️ Fehlerbehebungen & Optimierungen
+• Behebung von `TypeError: 'Command' object is not callable` bei manuellen Command-Aufrufen im Code.
+• Optimierung der Suchlogik auf ODER-Verknüpfung für flexiblere Raider-Treffer.
+• Verbessertes Member-Fetching, falls User nicht im Bot-Cache vorhanden sind.
+
 [0.9.2] – 2025-12-27 (Aktuelles Update)
 ✨ Berechtigungs-System & Shani-Menü
 

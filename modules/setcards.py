@@ -91,17 +91,17 @@ async def _with_timeout(coro, sec: int = 6):
     return await asyncio.wait_for(coro, timeout=sec)
 
 # ============================================================
-# OPTIONS / VALIDATION
+# OPTIONS / VALIDATION (Friendly Labels)
 # ============================================================
-ORIENTATION_OPTIONS = ["PvE", "PvP", "Quest", "Loot"]
-EXPERIENCE_OPTIONS = ["Anfänger", "Fortgeschritten", "Alter Hase"]
+ORIENTATION_OPTIONS = ["PvE (Spieler gegen ARC)", "PvP (Spieler-Kämpfe)", "Quest (Aufgaben)", "Loot (Beute sammeln)"]
+EXPERIENCE_OPTIONS = ["Anfänger (Starter)", "Fortgeschritten", "Alter Hase (Pro)"]
 PLATFORM_OPTIONS = ["PC", "Konsole"]
 NETWORK_BY_PLATFORM = {
     "PC": ["Steam", "Epic", "Other"],
     "Konsole": ["PSN", "Xbox"],
 }
 AGE_GROUP_OPTIONS = ["18+", "25+", "30+", "40+", "50+"]
-VOICE_OPTIONS = ["Ja", "Nein", "Optional"]
+VOICE_OPTIONS = ["Mikrofon (Pflicht)", "Nur Zuhören", "Optional (Nach Bedarf)"]
 
 # Dummy values (for disabled selects that still require options)
 DUMMY_WAIT_VALUE = "__wait__"
@@ -734,12 +734,26 @@ def _match_card(card: dict,
     if ori:
         have = set(card.get("orientation") or [])
         want = set(ori)
-        if not want.issubset(have):
+        # ODER-Verknüpfung + Teil-Match (versteht 'PvE' und 'PvE (Missionen)')
+        found_any = False
+        for w in want:
+            # Check if search term is in DB term or vice versa
+            if any((w in h or h in w) for h in have):
+                found_any = True
+                break
+        if not found_any:
             return False
-    if experience and (card.get("experience") or "") != experience:
-        return False
-    if platform and (card.get("platform") or "") != platform:
-        return False
+            
+    if experience:
+        val = (card.get("experience") or "")
+        if experience not in val and val not in experience:
+            return False
+            
+    if platform:
+        val = (card.get("platform") or "")
+        if platform not in val and val not in platform:
+            return False
+
     if network and (card.get("network") or "") != network:
         return False
     if age_group and (card.get("age_group") or "") != age_group:
