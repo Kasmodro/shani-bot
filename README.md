@@ -21,7 +21,8 @@ python3 bot.py
 Use the official invite link below to add **Shani** to your Discord server.
 
 > ⚠️ Shani requires specific permissions to fully manage voice channels, squads, and interactive features.  
-> **Administrator permission is NOT required.**
+> **Administrator permission is NOT required.**  
+> Shani only requests the minimum permissions necessary for its features.
 
 ### Invite URL
 https://discord.com/api/oauth2/authorize?client_id=1319253457599041537&permissions=285223056&scope=bot%20applications.commands
@@ -29,6 +30,8 @@ https://discord.com/api/oauth2/authorize?client_id=1319253457599041537&permissio
 > 🔐 Shani only uses the permissions listed above and never requests administrator access.
 
 ### Required Server Permissions
+The following permissions are required for Shani to create and manage dynamic voice channels and interactive features:
+
 - Manage Channels
 - Move Members
 - Send Messages
