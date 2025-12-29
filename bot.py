@@ -169,6 +169,21 @@ async def _create_squad_channel(member: discord.Member, target_limit: int):
             except:
                 pass
         
+        # --- Verzögerter Cleanup (2 Minuten) ---
+        # Falls nach 2 Minuten niemand drin ist, wird der Kanal gelöscht.
+        async def delayed_cleanup(chan_id: int):
+            await asyncio.sleep(120)
+            chan = bot.get_channel(chan_id)
+            if chan and isinstance(chan, discord.VoiceChannel):
+                if len(chan.members) == 0:
+                    try:
+                        await chan.delete()
+                        logger.info(f"🗑️ [Delayed Cleanup] Deleted unused squad channel {chan.name}")
+                    except:
+                        pass
+        
+        asyncio.create_task(delayed_cleanup(channel.id))
+
         return channel
     except Exception as e:
         logger.error(f"[{member.guild.name}] Error in _create_squad_channel: {e}")
