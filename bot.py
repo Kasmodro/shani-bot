@@ -1,3 +1,10 @@
+# ============================================================
+# SHANI DISCORD BOT
+# Entwickelt von: Kasmodro
+# Zweck: Raider-Setcards, Auto-Voice & Twitch-Alerts
+# Repository: https://github.com/Kasmodro/shani-bot
+# ============================================================
+
 import os
 import re
 import time
