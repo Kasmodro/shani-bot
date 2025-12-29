@@ -49,11 +49,18 @@ Ein leistungsstarker Discord-Bot für die Verwaltung von Raider-Setcards, dynami
     pip install -r requirements.txt
     ```
 
-3.  **Konfiguration:**
-    Erstelle eine `.env` Datei im Hauptverzeichnis:
-    ```env
-    DISCORD_TOKEN=DEIN_BOT_TOKEN
-    ```
+3.  **Konfiguration (.env Datei):**
+    Der Bot benötigt einen Discord-Token, um online zu gehen. Diesen speicherst du sicher in einer Datei namens `.env`.
+    
+    *   Erstelle im Hauptverzeichnis des Bots eine neue Datei mit dem Namen `.env`:
+        ```bash
+        touch .env
+        ```
+    *   Öffne die Datei (z. B. mit `nano .env`) und füge deinen Bot-Token ein:
+        ```env
+        DISCORD_TOKEN=DEIN_BOT_TOKEN_HIER_EINSETZEN
+        ```
+    *   *Hinweis:* Die `.env` Datei wird von Git ignoriert, damit dein Token nicht öffentlich auf GitHub landet.
 
 4.  **Bot starten:**
     ```bash
