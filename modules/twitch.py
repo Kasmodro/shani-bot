@@ -133,6 +133,44 @@ class TwitchSetupView(discord.ui.View):
     def __init__(self):
         super().__init__(timeout=300)
 
+    @staticmethod
+    async def build_setup_embed(guild: discord.Guild):
+        from bot import get_guild_cfg
+        cfg = await get_guild_cfg(guild.id)
+        
+        embed = discord.Embed(
+            title="🟣 Twitch-Live Setup",
+            description="Konfiguriere den Twitch-Kanal und die Benachrichtigungen.",
+            color=discord.Color.purple()
+        )
+        
+        if cfg.get("twitch_enabled"):
+            ch_id = cfg.get("twitch_announce_channel_id")
+            ch = guild.get_channel(int(ch_id)) if ch_id else None
+            role_id = cfg.get("twitch_ping_role_id")
+            role = guild.get_role(int(role_id)) if role_id else None
+            
+            stable = cfg.get("twitch_stable_checks", 2)
+            poll = cfg.get("twitch_poll_seconds", 90)
+            grace = int(cfg.get("twitch_offline_grace_seconds", 300)) // 60
+            
+            status_text = (
+                f"✅ **Aktiviert**\n"
+                f"• Kanal: **{cfg.get('twitch_channel', '—')}**\n"
+                f"• Announce: {ch.mention if ch else '❌'}\n"
+                f"• Ping: {role.mention if role else '—'}\n"
+                f"• Stable: **{stable}** | Poll: **{poll}s** | Grace: **{grace}m**"
+            )
+        else:
+            status_text = "❌ **Deaktiviert**"
+            
+        embed.add_field(name="Aktueller Status", value=status_text, inline=False)
+        return embed
+
+    async def _update_embed(self, interaction: discord.Interaction):
+        embed = await self.build_setup_embed(interaction.guild)
+        await interaction.edit_original_response(embed=embed, view=self)
+
     @discord.ui.button(label="Twitch-Kanal setzen", style=discord.ButtonStyle.primary, row=0)
     async def btn_channel(self, interaction: discord.Interaction, button: discord.ui.Button):
         await interaction.response.send_modal(TwitchChannelModal())
@@ -142,6 +180,7 @@ class TwitchSetupView(discord.ui.View):
         from bot import update_guild_cfg
         await update_guild_cfg(interaction.guild_id, twitch_announce_channel_id=select.values[0].id)
         await interaction.response.send_message(f"✅ Ankündigungs-Kanal auf {select.values[0].mention} gesetzt.", ephemeral=True)
+        await self._update_embed(interaction)
 
     @discord.ui.select(cls=discord.ui.RoleSelect, placeholder="🔔 Ping-Rolle wählen (optional)", row=2)
     async def select_ping(self, interaction: discord.Interaction, select: discord.ui.RoleSelect):
@@ -149,12 +188,21 @@ class TwitchSetupView(discord.ui.View):
         role = select.values[0]
         await update_guild_cfg(interaction.guild_id, twitch_ping_role_id=role.id)
         await interaction.response.send_message(f"✅ Ping-Rolle auf {role.mention} gesetzt.", ephemeral=True)
+        await self._update_embed(interaction)
 
-    @discord.ui.button(label="Twitch-Funktion aktivieren", style=discord.ButtonStyle.success, row=3)
+    @discord.ui.button(label="Aktivieren", style=discord.ButtonStyle.success, row=3)
     async def btn_enable(self, interaction: discord.Interaction, button: discord.ui.Button):
         from bot import update_guild_cfg
         await update_guild_cfg(interaction.guild_id, twitch_enabled=1)
         await interaction.response.send_message("✅ Twitch-Live Benachrichtigungen wurden aktiviert.", ephemeral=True)
+        await self._update_embed(interaction)
+
+    @discord.ui.button(label="Deaktivieren", style=discord.ButtonStyle.danger, row=3)
+    async def btn_disable(self, interaction: discord.Interaction, button: discord.ui.Button):
+        from bot import update_guild_cfg
+        await update_guild_cfg(interaction.guild_id, twitch_enabled=0)
+        await interaction.response.send_message("🛑 Twitch-Live Benachrichtigungen wurden deaktiviert.", ephemeral=True)
+        await self._update_embed(interaction)
 
 class TwitchCog(commands.Cog):
     def __init__(self, bot: commands.Bot):

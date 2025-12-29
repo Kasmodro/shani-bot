@@ -8,6 +8,7 @@ Alle relevanten Änderungen am Shani-Bot | All relevant changes to Shani Bot
 ✨ **YouTube & Stabilität**
 - **YouTube Live-Alerts:** Neues Modul zur Erkennung von YouTube-Live-Streams ohne API-Key. Unterstützt Handles (z. B. `@alexanderfuehren`) und Channel-IDs.
 - **Angleichung an Twitch:** YouTube-Alerts bieten nun dieselben Konfigurationsmöglichkeiten (Stable-Checks, Polling-Rate, Offline-Grace) wie das Twitch-Modul.
+- **Verbesserte Status-Anzeige:** Die Refreshrate, Stable-Checks und Offline-Verzögerung werden nun sowohl in `/shani_status` als auch direkt in den Setup-Menüs für Twitch und YouTube angezeigt.
 - **Zweisprachiges Changelog:** Dokumentation nun konsistent in Deutsch und Englisch.
 
 ✨ **Konsolen-Support & Anpassbarkeit**
@@ -24,6 +25,7 @@ Alle relevanten Änderungen am Shani-Bot | All relevant changes to Shani Bot
 ✨ **YouTube & Stability**
 - **YouTube Live Alerts:** New module for detecting YouTube live streams without an API key. Supports handles (e.g., `@alexanderfuehren`) and channel IDs.
 - **Consistency with Twitch:** YouTube alerts now offer the same configuration options (stable checks, polling rate, offline grace) as the Twitch module.
+- **Improved Status Display:** Polling rate, stable checks, and offline grace are now displayed in `/shani_status` as well as directly within the Twitch and YouTube setup menus.
 - **Bilingual Changelog:** Documentation now consistently provided in German and English.
 
 ✨ **Console Support & Customization**

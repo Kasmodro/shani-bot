@@ -705,22 +705,14 @@ class ShaniSetupView(discord.ui.View):
     async def btn_twitch(self, interaction: discord.Interaction, button: discord.ui.Button):
         from modules.twitch import TwitchSetupView
         view = TwitchSetupView()
-        embed = discord.Embed(
-            title="🟣 Twitch-Live Setup",
-            description="Konfiguriere den Twitch-Kanal und die Benachrichtigungen.",
-            color=discord.Color.purple()
-        )
+        embed = await view.build_setup_embed(interaction.guild)
         await interaction.response.send_message(embed=embed, view=view, ephemeral=True)
 
     @discord.ui.button(label="YouTube-Live", style=discord.ButtonStyle.secondary, row=2)
     async def btn_youtube(self, interaction: discord.Interaction, button: discord.ui.Button):
         from modules.youtube import YoutubeSetupView
         view = YoutubeSetupView()
-        embed = discord.Embed(
-            title="🔴 YouTube-Live Setup",
-            description="Konfiguriere den YouTube-Kanal und die Benachrichtigungen.",
-            color=discord.Color.red()
-        )
+        embed = await view.build_setup_embed(interaction.guild)
         await interaction.response.send_message(embed=embed, view=view, ephemeral=True)
 
     @discord.ui.button(label="Bot-Name ändern", style=discord.ButtonStyle.secondary, row=2)
@@ -857,10 +849,14 @@ async def shani_status(interaction: discord.Interaction):
     if cfg.get("twitch_enabled"):
         tw_ch = interaction.guild.get_channel(int(cfg.get("twitch_announce_channel_id", 0))) if cfg.get("twitch_announce_channel_id") else None
         role = interaction.guild.get_role(int(cfg.get("twitch_ping_role_id", 0))) if cfg.get("twitch_ping_role_id") else None
+        stable = cfg.get("twitch_stable_checks", 2)
+        poll = cfg.get("twitch_poll_seconds", 90)
+        grace = int(cfg.get("twitch_offline_grace_seconds", 300)) // 60
         tw_val = (
             f"• Kanal: **{cfg.get('twitch_channel')}**\n"
             f"• Announce: {tw_ch.mention if tw_ch else '❌'}\n"
-            f"• Ping: {role.mention if role else '—'}"
+            f"• Ping: {role.mention if role else '—'}\n"
+            f"• Stable: **{stable}** | Poll: **{poll}s** | Grace: **{grace}m**"
         )
     else:
         tw_val = "❌ Deaktiviert"
@@ -870,10 +866,14 @@ async def shani_status(interaction: discord.Interaction):
     if cfg.get("youtube_enabled"):
         yt_ch = interaction.guild.get_channel(int(cfg.get("youtube_announce_channel_id", 0))) if cfg.get("youtube_announce_channel_id") else None
         yrole = interaction.guild.get_role(int(cfg.get("youtube_ping_role_id", 0))) if cfg.get("youtube_ping_role_id") else None
+        ystable = cfg.get("youtube_stable_checks", 2)
+        ypoll = cfg.get("youtube_poll_seconds", 300)
+        ygrace = int(cfg.get("youtube_offline_grace_seconds", 600)) // 60
         yt_val = (
             f"• Kanal: **{cfg.get('youtube_channel')}**\n"
             f"• Announce: {yt_ch.mention if yt_ch else '❌'}\n"
-            f"• Ping: {yrole.mention if yrole else '—'}"
+            f"• Ping: {yrole.mention if yrole else '—'}\n"
+            f"• Stable: **{ystable}** | Poll: **{ypoll}s** | Grace: **{ygrace}m**"
         )
     else:
         yt_val = "❌ Deaktiviert"
