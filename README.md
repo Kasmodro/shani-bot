@@ -10,7 +10,7 @@ Shani is a powerful Discord bot designed specifically for **ARC Raiders** commun
 
 ---
 
-Ein leistungsstarker Discord-Bot für die Verwaltung von Raider-Setcards, dynamische Auto-Voice Channels (2er, 3er, Open) und Twitch-Live-Alerts ohne API-Key. Nun mit vollständig interaktivem UI über Slash-Commands und Buttons.
+Ein leistungsstarker Discord-Bot für die Verwaltung von Raider-Setcards, dynamische Auto-Voice Channels (2er, 3er, Open) und Twitch-Live-Alerts ohne API-Key. Mit vollständig interaktivem UI über Slash-Commands und Buttons.
 
 ## 🚀 Features Detail (Deutsch)
 
@@ -50,7 +50,7 @@ Ein leistungsstarker Discord-Bot für die Verwaltung von Raider-Setcards, dynami
 
 1.  **Repository klonen:**
     ```bash
-    git clone https://github.com/Kasmodro/shani-bot-beta.git
+    git clone https://github.com/Kasmodro/shani-bot.git
     cd shani-bot
     ```
 
@@ -93,7 +93,7 @@ python3 cleanup_commands.py
 Danach den Bot neu starten und Discord (Strg+R) aktualisieren.
 
 ## 📄 Lizenz
-Dieses Projekt ist für den privaten Gebrauch auf Discord-Servern bestimmt.
+Dieses Projekt ist Open Source und für den Einsatz auf privaten Discord-Servern gedacht. Weiterverwendung oder Anpassungen sind erlaubt, solange der ursprüngliche Autor genannt wird.
 
 ---
 ### 🆘 Support
