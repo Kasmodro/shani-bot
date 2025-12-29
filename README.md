@@ -10,6 +10,7 @@ Shani is a powerful Discord bot designed specifically for **ARC Raiders** commun
 ```bash
 git clone https://github.com/Kasmodro/shani-arc-raiders-bot.git
 cd shani-arc-raiders-bot
+python3 -m venv venv && source venv/bin/activate
 pip install -r requirements.txt
 cp .env.example .env # Add your DISCORD_TOKEN to .env
 python3 bot.py
@@ -112,6 +113,8 @@ Damit alle Funktionen reibungslos laufen, benötigt der Bot folgende Einstellung
 
 2.  **Abhängigkeiten installieren:**
     ```bash
+    python3 -m venv venv
+    source venv/bin/activate
     pip install -r requirements.txt
     ```
 
