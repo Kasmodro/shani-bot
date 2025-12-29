@@ -4,6 +4,7 @@ bot_grundfunktion.py
 bot_mit_twitch.py
 
 # Backups und Configs
+*.bak
 *.backup
 *.backup_migration
 guild_config.json
