@@ -84,3 +84,8 @@ Danach den Bot neu starten und Discord (Strg+R) aktualisieren.
 
 ## 📄 Lizenz
 Dieses Projekt ist für den privaten Gebrauch auf Discord-Servern bestimmt.
+
+---
+### 🆘 Support
+Bei Fragen oder Problemen kannst du gerne dem Discord-Server beitreten:
+[https://discord.gg/UhhJtFteun](https://discord.gg/UhhJtFteun)
