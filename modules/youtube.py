@@ -408,5 +408,34 @@ class YoutubeCog(commands.Cog):
         await update_guild_cfg(interaction.guild_id, youtube_enabled=0)
         await interaction.response.send_message("🛑 YouTube-Alerts deaktiviert.", ephemeral=True)
 
+    @app_commands.command(name="youtubelive_test", description="Testet YouTube LIVE-Embed (funktioniert immer).")
+    @app_commands.checks.has_permissions(manage_guild=True)
+    async def youtubelive_test(self, interaction: discord.Interaction):
+        from bot import get_guild_cfg
+        cfg = await get_guild_cfg(interaction.guild_id)
+        if not cfg.get("youtube_enabled"):
+            await interaction.response.send_message("ℹ️ Erst /setup_youtubelive ausführen.", ephemeral=True)
+            return
+
+        meta = {
+            "title": "Test-Stream (nur Bot-Test)",
+            "avatar": None
+        }
+        await self.post_live(interaction.guild, cfg, meta)
+        await interaction.response.send_message("🧪 YouTube-Test gesendet.", ephemeral=True)
+
+    @app_commands.command(name="youtubeoffline_test", description="Testet YouTube OFFLINE-Edit.")
+    @app_commands.checks.has_permissions(manage_guild=True)
+    async def youtubeoffline_test(self, interaction: discord.Interaction):
+        from bot import get_guild_cfg
+        cfg = await get_guild_cfg(interaction.guild_id)
+        if not cfg.get("youtube_enabled"):
+            await interaction.response.send_message("ℹ️ Erst /setup_youtubelive ausführen.", ephemeral=True)
+            return
+
+        meta = {"avatar": None}
+        await self.edit_to_offline(interaction.guild, cfg, meta)
+        await interaction.response.send_message("🧪 YouTube OFFLINE-Edit versucht.", ephemeral=True)
+
 async def setup(bot: commands.Bot):
     await bot.add_cog(YoutubeCog(bot))
